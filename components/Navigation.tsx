@@ -4,31 +4,29 @@ import {createStackNavigator} from "@react-navigation/stack";
 import SplashScreen from "../screens/SpashScreen";
 import HomeScreen from '../screens/HomeScreen';
 import {authContext} from "../contexts/AuthContext";
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
 function Navigation() {
+    const Tab = createBottomTabNavigator();
     const Stack = createStackNavigator();
     const {state}: any = React.useContext(authContext);
-    return (
-        <Stack.Navigator>
-            {state.isLoading ? (
-                // We haven't finished checking for the token yet
+    return (state.isLoading ? (
+            <Stack.Navigator>
                 <Stack.Screen name="Splash" component={SplashScreen}/>
-            ) : state.userToken == null ? (
-                // No token found, user isn't signed in
-                <Stack.Screen
-                    name="SignIn"
-                    component={SignIn}
-                    options={{
-                        title: 'Sign in',
-                        // When logging out, a pop animation feels intuitive
-                        animationTypeForReplace: state.isSignout ? 'pop' : 'push',
-                    }}
-                />
-            ) : (
-                // User is signed in
-                <Stack.Screen name="Home" component={HomeScreen}/>
-            )}
-        </Stack.Navigator>
+            </Stack.Navigator>
+        ) : state.userToken ? (
+            <Tab.Navigator>
+                <Tab.Screen name="Home" component={HomeScreen}/>
+                <Tab.Screen name="Splash" component={SplashScreen}/>
+                {state?.user?.role?.label === 'Admin' ? (
+                    <Tab.Screen name='AdminProfile' component={SignIn}/>
+                ) : null}
+            </Tab.Navigator>
+        ) : (
+            <Stack.Navigator>
+                <Stack.Screen name="SignIn" component={SignIn}/>
+            </Stack.Navigator>
+        )
     )
 }
 
