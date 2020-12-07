@@ -3,7 +3,7 @@ import {NavigationContainer} from "@react-navigation/native";
 import AuthProvider from "./contexts/AuthContext";
 import Navigation from './components/Navigation';
 
-export default function App({navigation}: any) {
+export default function App() {
     return (
         <AuthProvider>
             <NavigationContainer>

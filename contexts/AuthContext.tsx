@@ -1,6 +1,7 @@
 import React from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {Auth} from "../services/Auth";
+import {Users} from "../services/Users";
 
 export const authContext = React.createContext({});
 
@@ -13,21 +14,24 @@ const AuthProvider = ({children}: any) => {
                         ...prevState,
                         userToken: action.token,
                         user: action.user,
-                        isLoading: false
+                        isLoading: false,
+                        error: false
                     };
                 case 'SIGN_IN':
                     return {
                         ...prevState,
                         isSignout: false,
                         userToken: action.token,
-                        user: action.user
+                        user: action.user,
+                        error: action.error
                     };
                 case 'SIGN_OUT':
                     return {
                         ...prevState,
                         isSignout: true,
                         userToken: null,
-                        user: null
+                        user: null,
+                        error: false
                     };
             }
         },
@@ -35,7 +39,8 @@ const AuthProvider = ({children}: any) => {
             isLoading: true,
             isSignout: false,
             userToken: null,
-            user: null
+            user: null,
+            error: false
         }
     );
     React.useEffect(() => {
@@ -58,19 +63,16 @@ const AuthProvider = ({children}: any) => {
     const context = React.useMemo(
         () => ({
             signIn: async (email: string, password: string): Promise<void> => {
-                // In a production app, we need to send some data (usually username, password) to server and get a token
-                // We will also need to handle errors if sign in failed
-                // After getting token, we need to persist the token using `AsyncStorage`
-                // In the example, we'll use a dummy token
                 try {
                     const connection = await Auth.authByCredentials(email, password);
                     if (connection && connection.token) {
                         await AsyncStorage.setItem('userToken', connection.token);
                         await AsyncStorage.setItem('user', JSON.stringify(connection.user));
-                        dispatch({type: 'SIGN_IN', token: connection.token, user: connection.user});
+                        dispatch({type: 'SIGN_IN', token: connection.token, user: connection.user, error: false});
                     }
                 } catch (e) {
                     console.error(e);
+                    dispatch({type: 'SIGN_IN', token: null, user: null, error: true})
                     return Promise.reject(e);
                 }
             },
@@ -85,12 +87,17 @@ const AuthProvider = ({children}: any) => {
                 }
             },
             signUp: async (data: any) => {
-                // In a production app, we need to send user data to server and get a token
-                // We will also need to handle errors if sign up failed
-                // After getting token, we need to persist the token using `AsyncStorage`
-                // In the example, we'll use a dummy token
-
-                dispatch({type: 'SIGN_IN', token: 'dummy-auth-token'});
+                try {
+                    const user = await Users.register(data);
+                    if (user) {
+                        dispatch({type: 'SIGN_IN', token: null, user: null, error: false})
+                        return user;
+                    }
+                } catch (e) {
+                    console.error(e);
+                    dispatch({type: 'SIGN_IN', token: null, user: null, error: true})
+                    return Promise.reject(e);
+                }
             },
             state
         }),
