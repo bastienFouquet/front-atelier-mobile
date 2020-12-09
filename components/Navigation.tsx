@@ -6,6 +6,7 @@ import SignUp from "../screens/SignUp";
 import SignIn from "../screens/SignIn";
 import SplashScreen from "../screens/SplashScreen";
 import HomeScreen from '../screens/HomeScreen';
+import DetailsRecipe from "../screens/DetailsRecipe";
 
 function Navigation({navigation}: any) {
     const Tab = createBottomTabNavigator();
@@ -14,6 +15,7 @@ function Navigation({navigation}: any) {
     return (state.userToken ? (
             <Tab.Navigator>
                 <Tab.Screen name="Home" component={HomeScreen}/>
+                <Tab.Screen name="DetailsRecipe" component={DetailsRecipe} options={{tabBarVisible: false}}/>
                 {state?.user?.role?.label === 'Admin' ? (
                     <Tab.Screen name='AdminProfile' component={SignIn}/>
                 ) : null}
