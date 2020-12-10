@@ -1,5 +1,5 @@
-export class Headers {
-    public static getHeaders(token: any = null): any {
+export const Headers = {
+    getHeaders: (token: any = null): any => {
         return {
             headers: {
                 'Accept': 'application/json',

@@ -4,11 +4,13 @@ import {Recipe} from "../services/Recipe";
 import {authContext} from "../contexts/AuthContext";
 import {consts} from '../config/consts';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Header from "../components/Header";
 
-function DetailsRecipe({route}: any) {
+function DetailsRecipe({route, navigation}: any) {
     const {recipeId} = route.params;
-    const {state} = useContext(authContext);
-    const [recipe, setRecipe] = React.useState([]);
+    const {state}: any = useContext(authContext);
+    const [recipe, setRecipe]: any = React.useState({});
+
     useEffect(() => {
         async function getRecipe() {
             setRecipe(await Recipe.getOne(recipeId, state.userToken));
@@ -16,89 +18,108 @@ function DetailsRecipe({route}: any) {
 
         getRecipe().then();
     });
+
     const imagePath = () => {
-        return consts.apiBaseUrl + 'images/' + recipe.image;
+        if (recipe.image) {
+            if (recipe.image.includes('http')) {
+                return recipe.image;
+            } else {
+                return consts.apiBaseUrl + 'images/' + recipe.image;
+            }
+        } else {
+            return consts.defaultCookingImage;
+        }
     }
+
     const stars = [];
     for (let i = 0; i < recipe.level; i++) {
-        stars.push("");
+        stars.push('');
     }
-    return (
-        <ScrollView>
-            <View style={styles.container}>
-                <View style={styles.innerImage}>
-                    <Image style={styles.image} source={{uri: imagePath()}}/>
-                </View>
-                <View style={styles.innerTitle}>
-                    <Text style={styles.title}>{recipe.title}</Text>
-                </View>
-                <View style={styles.infos}>
-                    <View style={styles.info}>
-                        <MaterialCommunityIcons
-                            name="silverware-fork-knife"
-                            color="#009387"
-                            size={50}
-                        />
-                        <Text style={styles.infoText}>{recipe.servings} Personnes</Text>
-                    </View>
-                    <View style={styles.info}>
-                        <View style={styles.stars}>
-                            {stars.map(() => {
-                                return (
-                                    <MaterialCommunityIcons
-                                        style={styles.icon}
-                                        name="star"
-                                        color="#009387"
-                                        size={30}
-                                    />
-                                )
-                            })}
-                        </View>
-                        <Text>Difficulté</Text>
-                    </View>
-                    <View style={styles.info}>
-                        <MaterialCommunityIcons
-                            name="clock-fast"
-                            color="#009387"
-                            size={50}
-                        />
-                        <Text style={styles.infoText}>{recipe.duration}</Text>
-                    </View>
-                </View>
-                <View style={styles.content}>
-                    <View style={styles.listing}>
-                        <Text style={styles.subtitle}>Ingrédients nécessaires :</Text>
-                        {recipe.ingredients ? (recipe.ingredients.map((ingredient) => {
-                            return (
-                                <View style={styles.ingredient}>
-                                    <MaterialCommunityIcons
-                                        name="check-circle-outline"
-                                        color="#009387"
-                                        size={14}
-                                    />
-                                    <Text> {ingredient.quantity} {ingredient.title}</Text>
-                                </View>
-                            )
-                        })) : null}
-                    </View>
-                    <View style={styles.steps}>
-                        {recipe.steps ? (recipe.steps.map((step) => {
-                            return (
-                                <View style={styles.step}>
-                                    <Text style={styles.stepPos}>{step.position}</Text>
-                                    <Text style={styles.stepText}>{step.description}</Text>
-                                    <Text style={styles.line}> </Text>
-                                </View>
 
-                            )
-                        })) : null}
+    return (
+        <View>
+            <Header canBackward={true} title={'Recette'} navigation={navigation}/>
+            <ScrollView>
+                <View style={styles.container}>
+                    <View style={styles.innerImage}>
+                        <Image style={styles.image} source={{uri: imagePath()}}/>
                     </View>
-                    <Text style={styles.user}>Recette créée par : {recipe.user.firstname} {recipe.user.lastname}</Text>
+                    <View style={styles.innerTitle}>
+                        <Text style={styles.title}>{recipe.title}</Text>
+                    </View>
+                    <View style={styles.infos}>
+                        <View style={styles.info}>
+                            <MaterialCommunityIcons
+                                name="silverware-fork-knife"
+                                color="#009387"
+                                size={50}
+                            />
+                            <Text style={styles.infoText}>{recipe.servings} Personnes</Text>
+                        </View>
+                        <View style={styles.info}>
+                            <View style={styles.stars}>
+                                {stars.map((item: any, i: number) => {
+                                    return (
+                                        <MaterialCommunityIcons
+                                            key={i}
+                                            style={styles.icon}
+                                            name="star"
+                                            color="#009387"
+                                            size={30}
+                                        />
+                                    )
+                                })}
+                            </View>
+                            <Text>Difficulté</Text>
+                        </View>
+                        <View style={styles.info}>
+                            <MaterialCommunityIcons
+                                name="clock-fast"
+                                color="#009387"
+                                size={50}
+                            />
+                            <Text style={styles.infoText}>{recipe.duration}</Text>
+                        </View>
+                    </View>
+                    <View style={styles.content}>
+                        <View style={styles.listing}>
+                            <Text style={styles.subtitle}>Ingrédients nécessaires :</Text>
+                            {recipe.ingredients ? (recipe.ingredients.map((ingredient: any, i: number) => {
+                                return (
+                                    <View key={i} style={styles.ingredient}>
+                                        <MaterialCommunityIcons
+                                            name="check-circle-outline"
+                                            color="#009387"
+                                            size={14}
+                                        />
+                                        <Text> {ingredient.quantity} {ingredient.title}</Text>
+                                    </View>
+                                )
+                            })) : null}
+                        </View>
+                        <View>
+                            {recipe.steps ? (recipe.steps.map((step: any, i: number) => {
+                                return (
+                                    <View key={i} style={styles.step}>
+                                        <Text style={styles.stepPos}>{step.position}</Text>
+                                        <Text style={styles.stepText}>{step.description}</Text>
+                                        <Text style={styles.line}> </Text>
+                                    </View>
+
+                                )
+                            })) : null}
+                        </View>
+                        {recipe.user ? (
+                            <Text style={styles.user}>Recette créée par : {recipe.user.firstname} {recipe.user.lastname}</Text>
+                        ): null}
+                    </View>
                 </View>
-            </View>
-        </ScrollView>
+            </ScrollView>
+        </View>
     )
 }
+
+export default DetailsRecipe;
 
 const styles = StyleSheet.create({
     container: {
@@ -208,5 +229,3 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
 });
-
-export default DetailsRecipe;

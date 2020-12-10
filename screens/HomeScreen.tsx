@@ -15,24 +15,33 @@ function HomeScreen({navigation}: any) {
         }
 
         getRecipes().then();
-    });
+    }, []);
+
     const imagePath = (recipe: any) => {
-        return consts.apiBaseUrl + 'images/' + recipe.image;
+        if (recipe.image) {
+            if (recipe.image.includes('http')) {
+                return recipe.image;
+            } else {
+                return consts.apiBaseUrl + 'images/' + recipe.image;
+            }
+        } else {
+            return consts.defaultCookingImage;
+        }
     }
     const getStars = (recipe: any) => {
         const stars = [];
         for (let i = 0; i < recipe.level; i++) {
-            stars.push("");
+            stars.push('');
         }
         return stars;
     }
     return (
         <View>
-            <Header/>
+            <Header canBackward={false} title={'Home'}/>
             <ScrollView>
-                {recipes.map((recipe) => {
+                {recipes.map((recipe: any, i: number) => {
                     return (
-                        <View style={styles.recipe}>
+                        <View key={i} style={styles.recipe}>
                             <TouchableHighlight onPress={() => navigation.navigate("DetailsRecipe", {
                                 recipeId: recipe.id
                             })}>
@@ -44,9 +53,10 @@ function HomeScreen({navigation}: any) {
                                     <Text style={styles.title}>{recipe.title}</Text>
                                 </View>
                                 <View style={styles.innerStars}>
-                                    {getStars(recipe).map(() => {
+                                    {getStars(recipe).map((item: any, i: number) => {
                                         return (
                                             <MaterialCommunityIcons
+                                                key={i}
                                                 style={styles.icon}
                                                 name="star"
                                                 color="#009387"
@@ -63,6 +73,8 @@ function HomeScreen({navigation}: any) {
         </View>
     );
 }
+
+export default HomeScreen;
 
 const styles = StyleSheet.create({
     recipe: {
@@ -103,4 +115,3 @@ const styles = StyleSheet.create({
     },
     icon: {}
 });
-export default HomeScreen;
