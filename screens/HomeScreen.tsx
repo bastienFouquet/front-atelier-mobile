@@ -38,12 +38,13 @@ function HomeScreen({navigation}: any) {
     return (
         <View>
             <Header canBackward={false} title={'Home'}/>
-            <ScrollView>
+            <ScrollView style={styles.scroll}>
                 {recipes.map((recipe: any, i: number) => {
                     return (
                         <View key={i} style={styles.recipe}>
-                            <TouchableHighlight onPress={() => navigation.navigate("DetailsRecipe", {
-                                recipeId: recipe.id
+                            <TouchableHighlight onPress={() => navigation.navigate('Details', {
+                                screen: 'Accueil',
+                                recipeId: recipe.id,
                             })}>
                                 <Image style={styles.image} source={{uri: imagePath(recipe)}}/>
                             </TouchableHighlight>
@@ -80,6 +81,9 @@ const styles = StyleSheet.create({
     recipe: {
         margin: 10,
         padding: 10,
+    },
+    scroll: {
+        marginBottom: 80,
     },
     image: {
         height: 200,
