@@ -49,7 +49,9 @@ function Header(props: any) {
                       size={25}
                       onPress={() => showMenu()}/>
                   }>
-                <MenuItem onPress={() => handleAlert('Profil')}>
+                <MenuItem onPress={() => navigation.navigate('Profile',{
+                    screen: 'Accueil'
+                })}>
                     Profil
                 </MenuItem>
                 <MenuItem onPress={() => handleAlert('Options')}>

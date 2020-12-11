@@ -37,7 +37,7 @@ function HomeScreen({navigation}: any) {
     }
     return (
         <View>
-            <Header canBackward={false} title={'Home'}/>
+            <Header canBackward={false} title={'Home'} navigation={navigation}/>
             <ScrollView style={styles.scroll}>
                 {recipes.map((recipe: any, i: number) => {
                     return (

@@ -10,6 +10,7 @@ import DetailsRecipe from "../screens/DetailsRecipe";
 import RecipeForm from "../screens/admin/RecipeForm";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import MyRecipes from "../screens/admin/MyRecipes";
+import Profile from "../screens/Profile";
 
 const HomeStack = createStackNavigator();
 
@@ -18,6 +19,7 @@ function HomeStackScreen() {
         <HomeStack.Navigator>
             <HomeStack.Screen name="Home" component={HomeScreen} options={{headerShown: false}}/>
             <HomeStack.Screen name="Details" component={DetailsRecipe} options={{headerShown: false}}/>
+            <HomeStack.Screen name="Profile" component={Profile} options={{headerShown: false}} />
         </HomeStack.Navigator>
     );
 }
