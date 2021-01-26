@@ -32,14 +32,34 @@ function DetailsRecipe({route, navigation}: any) {
     }
 
     const stars = [];
-    for (let i = 0; i < recipe.level; i++) {
-        stars.push('');
+    for (let i = 1; i <= 4; i++) {
+        if (i <= recipe.level) {
+            stars.push('circle');
+        } else {
+            stars.push('circle-outline');
+        }
+
+    }
+    let difficulty = '';
+    switch (recipe.level) {
+        case 1:
+            difficulty = 'Très facile';
+            break;
+        case 2:
+            difficulty = 'Facile';
+            break;
+        case 3:
+            difficulty = 'Moyen';
+            break;
+        case 4:
+            difficulty = 'Difficile';
+            break;
     }
 
     return (
         <View>
             <Header canBackward={true} title={'Recette'} navigation={navigation}/>
-            <ScrollView>
+            <ScrollView style={styles.scroll}>
                 <View style={styles.container}>
                     <View style={styles.innerImage}>
                         <Image style={styles.image} source={{uri: imagePath()}}/>
@@ -63,14 +83,14 @@ function DetailsRecipe({route, navigation}: any) {
                                         <MaterialCommunityIcons
                                             key={i}
                                             style={styles.icon}
-                                            name="star"
+                                            name={item}
                                             color="#009387"
                                             size={30}
                                         />
                                     )
                                 })}
                             </View>
-                            <Text>Difficulté</Text>
+                            <Text>{difficulty}</Text>
                         </View>
                         <View style={styles.info}>
                             <MaterialCommunityIcons
@@ -110,8 +130,9 @@ function DetailsRecipe({route, navigation}: any) {
                             })) : null}
                         </View>
                         {recipe.user ? (
-                            <Text style={styles.user}>Recette créée par : {recipe.user.firstname} {recipe.user.lastname}</Text>
-                        ): null}
+                            <Text style={styles.user}>Recette créée par
+                                : {recipe.user.firstname} {recipe.user.lastname}</Text>
+                        ) : null}
                     </View>
                 </View>
             </ScrollView>
@@ -125,6 +146,9 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         flexDirection: "column",
+    },
+    scroll: {
+        marginBottom: 50,
     },
     image: {
         width: "100%",
@@ -182,8 +206,6 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     content: {
-        borderBottomWidth: 1,
-        borderStyle: "solid",
         padding: 10,
         marginTop: 20,
     },
@@ -227,5 +249,6 @@ const styles = StyleSheet.create({
     user: {
         textAlign: "center",
         marginTop: 20,
+        marginBottom: 20,
     },
 });
