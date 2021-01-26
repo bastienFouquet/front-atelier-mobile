@@ -23,7 +23,7 @@ export class Recipe {
     public static async getOne(recipeId: number, token: string): Promise<any> {
         try {
             const response = await axios.get(
-                consts.apiBaseUrl + 'recipe/' + recipeId,
+                consts.apiBaseUrl + 'recipes/' + recipeId,
                 Headers.getHeaders(token)
             );
             if (response.data) {
@@ -40,7 +40,7 @@ export class Recipe {
     public static async create(token: string, data: any): Promise<any> {
         try {
             const response = await axios.post(
-                consts.apiBaseUrl + 'recipe/create', {
+                consts.apiBaseUrl + 'recipes/create', {
                     title: data.title,
                     level: data.level,
                     categoryId: data.categoryId,

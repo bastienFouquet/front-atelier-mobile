@@ -75,6 +75,7 @@ function SignUp({navigation}: any) {
         }
     }
 
+    // @ts-ignore
     return (
         <View style={styles.container}>
             <StatusBar backgroundColor='#009387' barStyle="light-content"/>
