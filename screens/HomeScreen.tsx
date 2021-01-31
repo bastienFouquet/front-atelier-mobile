@@ -30,7 +30,7 @@ function HomeScreen({navigation}: any) {
     }
     const getStars = (recipe: any) => {
         const stars = [];
-        for (let i = 0; i < recipe.level; i++) {
+        for (let i = 0; i < recipe.average; i++) {
             stars.push('');
         }
         return stars;
