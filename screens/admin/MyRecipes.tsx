@@ -89,7 +89,6 @@ function MyRecipes({navigation}: any) {
                                         return (
                                             <MaterialCommunityIcons
                                                 key={i}
-                                                style={styles.icon}
                                                 name="star"
                                                 color="#009387"
                                                 size={30}
