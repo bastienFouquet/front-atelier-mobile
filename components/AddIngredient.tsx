@@ -1,5 +1,5 @@
 import React, {forwardRef, useContext, useImperativeHandle, useState} from "react";
-import {Alert, Text, Modal, StyleSheet, TouchableHighlight, View, TextInput} from "react-native";
+import {Modal, StyleSheet, Text, TextInput, TouchableHighlight, View} from "react-native";
 import {Ingredients} from "../services/Ingredients";
 import {authContext} from "../contexts/AuthContext";
 
@@ -12,9 +12,6 @@ const AddIngredient = forwardRef((props, ref) => {
     useImperativeHandle(ref, () => ({
             handleAddIngredientModal() {
                 setModalVisible(!modalVisible)
-            },
-            getIngredient() {
-                return ingredient;
             }
         }),
     )
@@ -42,10 +39,11 @@ const AddIngredient = forwardRef((props, ref) => {
                     <TextInput
                         placeholder="Nom de l'ingrédient"
                         autoCapitalize="none"
+                        style={{paddingBottom: 40, paddingTop: 20}}
                         value={title}
                         onChangeText={(value) => setTitle(value)}/>
                     <TouchableHighlight
-                        style={{...styles.openButton, backgroundColor: "#2196F3"}}
+                        style={{...styles.openButton, backgroundColor: "#009387"}}
                         onPress={async () => {
                             await addIngredient()
                         }}
@@ -70,8 +68,10 @@ const styles = StyleSheet.create({
     modalView: {
         margin: 20,
         backgroundColor: "white",
-        borderRadius: 20,
-        padding: 35,
+        borderRadius: 5,
+        padding: 40,
+        paddingTop: 10,
+        paddingBottom: 10,
         alignItems: "center",
         shadowColor: "#000",
         shadowOffset: {
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     },
     openButton: {
         backgroundColor: "#F194FF",
-        borderRadius: 20,
+        borderRadius: 5,
         padding: 10,
         elevation: 2
     },
@@ -95,6 +95,7 @@ const styles = StyleSheet.create({
     },
     modalText: {
         marginBottom: 15,
-        textAlign: "center"
+        textAlign: "center",
+        fontSize: 18
     }
 });

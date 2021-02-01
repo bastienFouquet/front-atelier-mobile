@@ -1,23 +1,66 @@
 import React, {useContext, useEffect} from "react";
-import {Image, ScrollView, StyleSheet, Text, View} from "react-native";
+import {Alert, Image, ScrollView, StyleSheet, Text, View} from "react-native";
 import {Recipe} from "../services/Recipe";
 import {authContext} from "../contexts/AuthContext";
 import {consts} from '../config/consts';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Header from "../components/Header";
+import {Notes} from "../services/Notes";
+import {Picker} from "@react-native-picker/picker";
 
 function DetailsRecipe({route, navigation}: any) {
     const {recipeId} = route.params;
     const {state}: any = useContext(authContext);
     const [recipe, setRecipe]: any = React.useState({});
+    const [note, setNote]: any = React.useState({});
 
     useEffect(() => {
         async function getRecipe() {
-            setRecipe(await Recipe.getOne(recipeId, state.userToken));
+            const recipe = await Recipe.getOne(recipeId, state.userToken)
+            setRecipe(recipe);
+            const notes = recipe.notes.filter((el: any) => el.user === state.user.id);
+            if (notes.length > 0) {
+                setNote(notes[0]);
+            }
         }
 
         getRecipe().then();
-    });
+    }, []);
+
+    const handleNote = async (value: any) => {
+        if (note.id) {
+            const newNote = await updateNote(value);
+            setNote(newNote);
+        } else {
+            const newNote = await createNote(value);
+            setNote(newNote);
+        }
+    }
+
+    const createNote = async (value: number) => {
+        try {
+            const noteCreated = await Notes.create(state.userToken, recipe.id, value);
+            if (noteCreated) {
+                Alert.alert('Note', 'Merci pour votre contribution !');
+                return Promise.resolve(noteCreated);
+            }
+        } catch (e) {
+            Alert.alert('Erreur', 'Une erreur est survenue');
+        }
+    }
+
+    const updateNote = async (value: number) => {
+        try {
+            console.log(note)
+            const noteUpdated = await Notes.update(state.userToken, {...note, value: value});
+            if (noteUpdated) {
+                Alert.alert('Note', 'Merci pour votre contribution !');
+                return Promise.resolve(noteUpdated);
+            }
+        } catch (e) {
+            Alert.alert('Erreur', 'Une erreur est survenue');
+        }
+    }
 
     const imagePath = () => {
         if (recipe.image) {
@@ -128,6 +171,21 @@ function DetailsRecipe({route, navigation}: any) {
 
                                 )
                             })) : null}
+                        </View>
+                        <View>
+                            <Text>Notez cette recette : </Text>
+                            <Picker selectedValue={note.value ? note.value : 0}
+                                    style={{height: 50, width: '100%'}}
+                                    onValueChange={async (value) =>
+                                        await handleNote(value)
+                                    }>
+                                <Picker.Item label={'0'} value={0}/>
+                                <Picker.Item label={'1'} value={1}/>
+                                <Picker.Item label={'2'} value={2}/>
+                                <Picker.Item label={'3'} value={3}/>
+                                <Picker.Item label={'4'} value={4}/>
+                                <Picker.Item label={'5'} value={5}/>
+                            </Picker>
                         </View>
                         {recipe.user ? (
                             <Text style={styles.user}>Recette créée par

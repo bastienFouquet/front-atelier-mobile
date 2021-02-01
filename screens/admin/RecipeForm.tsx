@@ -3,13 +3,11 @@ import {authContext} from "../../contexts/AuthContext";
 import {
     Alert,
     FlatList,
-    Platform,
     SafeAreaView,
     ScrollView,
     StyleSheet,
     Text,
     TextInput,
-    TouchableHighlight,
     TouchableOpacity,
     View
 } from "react-native";
@@ -20,6 +18,7 @@ import {Picker} from "@react-native-picker/picker";
 import Feather from "react-native-vector-icons/Feather";
 import AddIngredient from "../../components/AddIngredient";
 import {Recipe} from "../../services/Recipe";
+import {LinearGradient} from "expo-linear-gradient";
 
 function RecipeForm({navigation}: any) {
     const childRef: any = useRef();
@@ -29,6 +28,7 @@ function RecipeForm({navigation}: any) {
     const [data, setData]: any = React.useState({level: 1});
     const [steps, setSteps]: any = React.useState([{description: null, position: 1}]);
     const [ingredientsRecipe, setIngredientsRecipe]: any = React.useState([]);
+    const [refresh]: any = React.useState(false);
 
     useEffect(() => {
         async function getCategories() {
@@ -39,12 +39,14 @@ function RecipeForm({navigation}: any) {
     }, [])
 
     useEffect(() => {
-        async function getIngredients(): Promise<any> {
-            setIngredients(await Ingredients.getAll(state.userToken));
-        }
+        setTimeout(() => {
+            async function getIngredients() {
+                setIngredients(await Ingredients.getAll(state.userToken));
+            }
 
-        getIngredients().then();
-    }, [])
+            getIngredients().then();
+        }, 3000)
+    })
 
     const handleData = (key: string, value: any) => {
         setData({
@@ -110,19 +112,17 @@ function RecipeForm({navigation}: any) {
 
     return (
         <View style={styles.container}>
-            <Header canBackward={true} navigation={navigation} title={'Recette'}/>
+            <Header canBackward={true} navigation={navigation} title={'Ajout de recette'}/>
             <ScrollView>
                 <Text style={styles.text_footer}>Titre</Text>
-                <View style={styles.action}>
-                    <TextInput
-                        placeholder="Entrez le titre"
-                        style={styles.textInput}
-                        value={data.title}
-                        onChangeText={(value) => handleData('title', value)}
-                    />
-                </View>
+                <TextInput
+                    placeholder="Entrez le titre"
+                    style={styles.input}
+                    value={data.title}
+                    onChangeText={(value) => handleData('title', value)}
+                />
                 <Text style={styles.text_footer}>Catégorie</Text>
-                <View style={styles.action}>
+                <View style={styles.input}>
                     <Picker selectedValue={data.categoryId}
                             style={{height: 50, width: '100%'}}
                             onValueChange={(value) =>
@@ -136,7 +136,7 @@ function RecipeForm({navigation}: any) {
                     </Picker>
                 </View>
                 <Text style={styles.text_footer}>Difficulté</Text>
-                <View style={styles.action}>
+                <View style={styles.input}>
                     <Picker selectedValue={data.level}
                             style={{height: 50, width: '100%'}}
                             onValueChange={(value) =>
@@ -149,83 +149,89 @@ function RecipeForm({navigation}: any) {
                     </Picker>
                 </View>
                 <Text style={styles.text_footer}>Portions</Text>
-                <View style={styles.action}>
-                    <TextInput
-                        placeholder="Portions"
-                        style={styles.textInput}
-                        autoCapitalize="none"
-                        value={data.servings}
-                        onChangeText={(value) => handleData('servings', value)}
-                    />
-                </View>
+                <TextInput
+                    placeholder="Entrez le nombre de portions"
+                    style={styles.input}
+                    autoCapitalize="none"
+                    value={data.servings}
+                    onChangeText={(value) => handleData('servings', value)}
+                />
                 <Text style={styles.text_footer}>Durée</Text>
-                <View style={styles.action}>
-                    <TextInput
-                        placeholder="Durée"
-                        style={styles.textInput}
-                        autoCapitalize="none"
-                        value={data.duration}
-                        onChangeText={(value) => handleData('duration', value)}
-                    />
-                </View>
+                <TextInput
+                    placeholder="Entrez la durée"
+                    style={styles.input}
+                    autoCapitalize="none"
+                    value={data.duration}
+                    onChangeText={(value) => handleData('duration', value)}
+                />
                 <Text style={styles.text_footer}>Image</Text>
+                <TextInput
+                    placeholder="Entrez l'url de l'image"
+                    style={styles.input}
+                    autoCapitalize="none"
+                    value={data.image}
+                    onChangeText={(value) => handleData('image', value)}
+                />
                 <View style={styles.action}>
-                    <TextInput
-                        placeholder="Image"
-                        style={styles.textInput}
-                        autoCapitalize="none"
-                        value={data.image}
-                        onChangeText={(value) => handleData('image', value)}
-                    />
-                </View>
-                <View>
                     <Text style={styles.text_footer}>Ingrédients</Text>
                     <TouchableOpacity
                         onPress={() => {
                             childRef.current.handleAddIngredientModal()
-                        }}>
-                        <Feather name="plus"
+                        }} style={{paddingTop: 8}}>
+                        <Feather name="plus-circle"
                                  color="green"
-                                 size={20}/>
+                                 size={25}/>
                     </TouchableOpacity>
                 </View>
                 <AddIngredient ref={childRef}/>
-                <View style={styles.action}>
+                <View style={{...styles.action, paddingTop: 10}}>
                     <SafeAreaView>
                         <FlatList
                             horizontal
                             data={ingredients ? ingredients : null}
                             renderItem={renderItem}
-                            keyExtractor={item => item.title}
+                            keyExtractor={item => item.id}
                         />
                     </SafeAreaView>
                 </View>
-                {ingredientsRecipe.map((ingredient: any, i: number) => {
-                    return (<View key={i} style={styles.action}>
-                        <Text>{ingredient.title}</Text>
-                        <TextInput
-                            placeholder="Quantité"
-                            style={styles.textInput}
-                            autoCapitalize="none"
-                            value={ingredient.quantity}
-                            onChangeText={(value) => setQuantity(ingredient, value)}/>
-                        <TouchableOpacity
-                            onPress={() => {
-                                removeIngredientRecipe(ingredient)
-                            }}>
-                            <Feather name="trash-2"
-                                     color="red"
-                                     size={20}/>
-                        </TouchableOpacity>
-                    </View>)
-                })}
-                <View>
+                {ingredientsRecipe.length > 0 ? (
+                    <View style={styles.list}>
+                        {ingredientsRecipe.map((ingredient: any, i: number) => {
+                            return (<View key={i} style={{...styles.action, flex: 1}}>
+                                <Text style={{...styles.list_text, flex: 0}}>{ingredient.title} : </Text>
+                                <TextInput
+                                    placeholder="Entrez la quantité"
+                                    style={{...styles.input, flex: 1}}
+                                    autoCapitalize="none"
+                                    value={ingredient.quantity}
+                                    onChangeText={(value) => setQuantity(ingredient, value)}/>
+                                <TouchableOpacity
+                                    style={{flex: 0}}
+                                    onPress={() => {
+                                        removeIngredientRecipe(ingredient)
+                                    }}>
+                                    <Feather name="trash-2"
+                                             color="red"
+                                             size={25}/>
+                                </TouchableOpacity>
+                            </View>)
+                        })}
+                    </View>
+                ) : null}
+                <View style={{paddingTop: 10}}>
+                    <Text style={styles.text_footer}>Etapes :</Text>
                     {steps.map((step: any, i: number) => {
-                        return (<View key={i}>
+                        return (<View key={i} style={{
+                            flex: 1,
+                            flexDirection: "row",
+                            paddingBottom: 5,
+                            paddingTop: 5,
+                        }}>
+                            <Text style={{...styles.list_text, flex: 0}}>{step.position}</Text>
                             <TextInput
+                                multiline={true}
                                 placeholder={`Description de l'étape ${step.position}`}
-                                style={styles.textInput}
-                                autoCapitalize="none"
+                                style={{...styles.input, flex: 1}}
                                 value={step.description}
                                 onChangeText={(value: string) => {
                                     setDescription(step, value)
@@ -233,12 +239,19 @@ function RecipeForm({navigation}: any) {
                         </View>)
                     })}
                 </View>
-                <TouchableHighlight
+                <TouchableOpacity
+                    style={styles.confirm}
                     onPress={async () => {
                         await createRecipe().then();
                     }}>
-                    <Text>Confirmer</Text>
-                </TouchableHighlight>
+                    <LinearGradient
+                        colors={['#08d4c4', '#01ab9d']}
+                        style={styles.confirm}>
+                        <Text style={[styles.textConfirm, {
+                            color: '#fff'
+                        }]}>Confirmer</Text>
+                    </LinearGradient>
+                </TouchableOpacity>
             </ScrollView>
         </View>
     )
@@ -250,37 +263,34 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-    textInput: {
-        flex: 1,
-        marginTop: Platform.OS === 'ios' ? 0 : -12,
-        paddingLeft: 10,
-        color: '#05375a',
-    },
-    text_header: {
-        color: '#fff',
-        fontWeight: 'bold',
-        fontSize: 30
-    },
     text_footer: {
         color: '#05375a',
-        fontSize: 18
+        fontSize: 18,
+        paddingLeft: 10,
+        paddingTop: 8
     },
     action: {
-        flexDirection: 'row',
-        marginTop: 10,
-        borderBottomWidth: 1,
-        borderBottomColor: '#f2f2f2',
-        paddingBottom: 5
-    },
-    info: {
         flexDirection: "row",
-        paddingBottom: 10,
+        justifyContent: "space-between",
+        padding: 0,
+        marginRight: 10,
+        marginBottom: 15,
+        alignItems: "center"
+    },
+    input: {
+        marginLeft: 10,
+        marginRight: 10,
+        paddingBottom: 3,
+        paddingTop: 10,
+        padding: 5,
+        backgroundColor: '#e7e7e7',
+        borderRadius: 5,
     },
     item: {
         height: 50,
         width: 100,
         backgroundColor: '#009387',
-        margin: 5,
+        margin: 3,
         flex: 1,
         flexDirection: "row",
         alignItems: "center",
@@ -290,5 +300,41 @@ const styles = StyleSheet.create({
     item_text: {
         color: '#fff',
         textAlign: "center"
+    },
+    list_text: {
+        color: '#05375a',
+        fontSize: 15,
+        paddingLeft: 10,
+        paddingTop: 8
+    },
+    list: {
+        margin: 5,
+        borderRadius: 1.41,
+        borderColor: '#000',
+        padding: 10,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 1,
+        },
+        shadowOpacity: 0.20,
+        shadowRadius: 1.41,
+
+        elevation: 1
+    },
+    confirm: {
+        flex: 1,
+        flexDirection: "row",
+        padding: 15,
+        marginTop: 10,
+        marginBottom: 10,
+        height: 50,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 10
+    },
+    textConfirm: {
+        fontSize: 18,
+        fontWeight: 'bold'
     }
 })

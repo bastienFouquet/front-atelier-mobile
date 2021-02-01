@@ -1,6 +1,6 @@
 import React, {useEffect} from "react";
 import {authContext} from "../contexts/AuthContext";
-import {Text, View, StyleSheet, ScrollView, Image, TouchableHighlight} from "react-native";
+import {Image, ScrollView, StyleSheet, Text, TouchableHighlight, View} from "react-native";
 import Header from "../components/Header";
 import {Recipe} from '../services/Recipe';
 import {consts} from "../config/consts";
@@ -9,6 +9,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 function HomeScreen({navigation}: any) {
     const {state}: any = React.useContext(authContext);
     const [recipes, setRecipes] = React.useState([]);
+
     useEffect(() => {
         async function getRecipes() {
             setRecipes(await Recipe.getAll(state.userToken));
@@ -37,7 +38,7 @@ function HomeScreen({navigation}: any) {
     }
     return (
         <View>
-            <Header canBackward={false} title={'Home'} navigation={navigation}/>
+            <Header canBackward={false} title={'Accueil'} navigation={navigation}/>
             <ScrollView style={styles.scroll}>
                 {recipes.map((recipe: any, i: number) => {
                     return (

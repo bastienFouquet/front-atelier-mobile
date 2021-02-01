@@ -19,7 +19,7 @@ function HomeStackScreen() {
         <HomeStack.Navigator>
             <HomeStack.Screen name="Home" component={HomeScreen} options={{headerShown: false}}/>
             <HomeStack.Screen name="Details" component={DetailsRecipe} options={{headerShown: false}}/>
-            <HomeStack.Screen name="Profile" component={Profile} options={{headerShown: false}} />
+            <HomeStack.Screen name="Profile" component={Profile} options={{headerShown: false}}/>
         </HomeStack.Navigator>
     );
 }
@@ -57,7 +57,9 @@ function Navigation() {
                 {state?.user?.role?.label === 'Admin' ? (
                     <Tab.Screen name="Ajouter une recette" component={RecipeForm}/>
                 ) : null}
-                <Tab.Screen name="Mes recettes" component={MyRecipes}/>
+                {state?.user?.role?.label === 'Admin' ? (
+                    <Tab.Screen name="Mes recettes" component={MyRecipes}/>
+                ) : null}
             </Tab.Navigator>
         )
     } else {
